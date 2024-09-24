@@ -1,3 +1,3 @@
 module git.sr.ht/~alphatroya/atr-capture
 
-go 1.23.1
+go 1.23
