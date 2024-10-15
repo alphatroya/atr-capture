@@ -3,6 +3,7 @@ package entry
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 const dashPrefix = "- "
@@ -18,7 +19,9 @@ func NewEntry(text string) Entry {
 }
 
 func (e Entry) Build() string {
-	return fmt.Sprintf("%s%s", dashPrefix, padTextExceptFirstLine(e.text))
+	currentTime := time.Now()
+	formattedTime := fmt.Sprintf("%d:%02d", currentTime.Hour(), currentTime.Minute())
+	return fmt.Sprintf("%s**%s** %s", dashPrefix, formattedTime, padTextExceptFirstLine(e.text))
 }
 
 func padTextExceptFirstLine(text string) string {
