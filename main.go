@@ -25,6 +25,7 @@ func main() {
 	defer file.Close()
 
 	var text string
+	var tags []string
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewText().
@@ -37,6 +38,15 @@ func main() {
 					return nil
 				}).
 				Value(&text),
+
+			huh.NewMultiSelect[string]().
+				Title("Toppings").
+				Options(
+					huh.NewOption("Book to read", "books-to-read"),
+					huh.NewOption("Book to buy", "books-to-buy"),
+					huh.NewOption("Movie", "movies"),
+				).
+				Value(&tags),
 		),
 	)
 
@@ -44,7 +54,7 @@ func main() {
 		fmt.Println("Error filling the form:", err)
 		os.Exit(1)
 	}
-	out := entry.NewEntry(text).Build()
+	out := entry.NewEntry(text, tags).Build()
 
 	_, err = file.WriteString("\n" + out)
 	if err != nil {
