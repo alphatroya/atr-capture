@@ -20,7 +20,7 @@ func TestEntryResultBuilding(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := NewEntry(test.in).Build()
+		result := NewEntry(test.in, []string{}).Build(false)
 		if result != test.expected {
 			t.Errorf("Build(%s) = \"%s\"; want \"%s\"", test.in, result, test.expected)
 		}

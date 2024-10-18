@@ -6,7 +6,10 @@ import (
 	"time"
 )
 
-const dashPrefix = "- "
+const (
+	dashPrefix = "- "
+	todoMark   = "TODO "
+)
 
 type Entry struct {
 	text string
@@ -20,10 +23,16 @@ func NewEntry(text string, tags []string) Entry {
 	}
 }
 
-func (e Entry) Build() string {
+func (e Entry) Build(isTodo bool) string {
 	currentTime := time.Now()
 	formattedTime := fmt.Sprintf("%d:%02d", currentTime.Hour(), currentTime.Minute())
-	result := fmt.Sprintf("%s**%s** %s", dashPrefix, formattedTime, padTextExceptFirstLine(e.text))
+
+	t := ""
+	if isTodo {
+		t = todoMark
+	}
+
+	result := fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text))
 	if len(e.tags) == 0 {
 		return result
 	}

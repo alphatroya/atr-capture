@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	file, err := os.OpenFile(envs.TodayJournalPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(envs.TodayJournalPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		fmt.Println("Error opening the file:", err)
 		os.Exit(1)
@@ -26,6 +26,7 @@ func main() {
 
 	var text string
 	var tags []string
+	isTodo := false
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewText().
@@ -42,11 +43,15 @@ func main() {
 			huh.NewMultiSelect[string]().
 				Title("Toppings").
 				Options(
-					huh.NewOption("Book to read", "books-to-read"),
+					huh.NewOption("Book to read", "books"),
 					huh.NewOption("Book to buy", "books-to-buy"),
 					huh.NewOption("Movie", "movies"),
 				).
 				Value(&tags),
+
+			huh.NewConfirm().
+				Title("Mark item as TODO?").
+				Value(&isTodo),
 		),
 	)
 
@@ -54,7 +59,7 @@ func main() {
 		fmt.Println("Error filling the form:", err)
 		os.Exit(1)
 	}
-	out := entry.NewEntry(text, tags).Build()
+	out := entry.NewEntry(text, tags).Build(isTodo)
 
 	_, err = file.WriteString("\n" + out)
 	if err != nil {
