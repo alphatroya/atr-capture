@@ -41,11 +41,12 @@ func main() {
 				Value(&text),
 
 			huh.NewMultiSelect[string]().
-				Title("Toppings").
+				Title("Select tags").
 				Options(
-					huh.NewOption("Book to read", "books"),
-					huh.NewOption("Book to buy", "books-to-buy"),
-					huh.NewOption("Movie", "movies"),
+					huh.NewOption("📚 Book to read", "books"),
+					huh.NewOption("📚 Book to buy", "books-to-buy"),
+					huh.NewOption("🍿 Movie", "movies"),
+					huh.NewOption("🤔 Ideas", "ideas"),
 				).
 				Value(&tags),
 
