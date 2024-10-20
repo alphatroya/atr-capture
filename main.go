@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
@@ -32,6 +33,7 @@ func main() {
 				Title("Capture this").
 				ShowLineNumbers(true).
 				Validate(func(in string) error {
+					in = strings.TrimSpace(in)
 					if len(in) == 0 {
 						return errors.New("quick capture text can't be empty")
 					}
