@@ -26,7 +26,6 @@ func main() {
 
 	var text string
 	var tags []string
-	isTodo := false
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewText().
@@ -43,16 +42,13 @@ func main() {
 			huh.NewMultiSelect[string]().
 				Title("Select tags").
 				Options(
+					huh.NewOption("TODO", "todo"),
 					huh.NewOption("📚 Book to read", "books"),
-					huh.NewOption("📚 Book to buy", "books-to-buy"),
+					huh.NewOption("🛍️ Book to buy", "books-to-buy"),
 					huh.NewOption("🍿 Movie", "movies"),
 					huh.NewOption("🤔 Ideas", "ideas"),
 				).
 				Value(&tags),
-
-			huh.NewConfirm().
-				Title("Mark item as TODO?").
-				Value(&isTodo),
 		),
 	)
 
@@ -60,7 +56,7 @@ func main() {
 		fmt.Println("Error filling the form:", err)
 		os.Exit(1)
 	}
-	out := entry.NewEntry(text, tags).Build(isTodo)
+	out := entry.NewEntry(text, tags).Build()
 
 	_, err = file.WriteString("\n" + out)
 	if err != nil {

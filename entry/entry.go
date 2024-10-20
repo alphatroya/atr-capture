@@ -23,25 +23,26 @@ func NewEntry(text string, tags []string) Entry {
 	}
 }
 
-func (e Entry) Build(isTodo bool) string {
+func (e Entry) Build() string {
 	currentTime := time.Now()
 	formattedTime := fmt.Sprintf("%d:%02d", currentTime.Hour(), currentTime.Minute())
 
 	t := ""
-	if isTodo {
-		t = todoMark
+	tagslist := ""
+	for i, tag := range e.tags {
+		if tag == "todo" {
+			t = todoMark
+			continue
+		}
+		tagslist += "#" + tag
+		if i != len(e.tags)-1 {
+			tagslist += " "
+		}
 	}
 
 	result := fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text))
 	if len(e.tags) == 0 {
 		return result
-	}
-	tagslist := ""
-	for i, tag := range e.tags {
-		tagslist += "#" + tag
-		if i != len(e.tags)-1 {
-			tagslist += " "
-		}
 	}
 	return fmt.Sprintf("%s %s", result, tagslist)
 }
