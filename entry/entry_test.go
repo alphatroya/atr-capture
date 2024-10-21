@@ -12,6 +12,7 @@ func TestEntryResultBuilding(t *testing.T) {
 
 	tests := []struct {
 		in       string
+		taglist  []string
 		expected string
 	}{
 		{
@@ -24,10 +25,20 @@ func TestEntryResultBuilding(t *testing.T) {
 			expected: `- **9:45** 112
   123`,
 		},
+		{
+			in:       "abc",
+			taglist:  []string{"a", "b"},
+			expected: "- **9:45** abc #a #b",
+		},
+		{
+			in:       "abc",
+			taglist:  []string{"a", "todo"},
+			expected: "- TODO **9:45** abc #a",
+		},
 	}
 
 	for _, test := range tests {
-		result := NewEntry(test.in, []string{}).Build(time)
+		result := NewEntry(test.in, test.taglist).Build(time)
 		if result != test.expected {
 			t.Errorf("Build(%s) = \"%s\"; want \"%s\"", test.in, result, test.expected)
 		}

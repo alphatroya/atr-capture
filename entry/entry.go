@@ -28,17 +28,15 @@ func (e Entry) Build(time time.Time) string {
 
 	t := ""
 	tagslist := ""
-	for i, tag := range e.tags {
+	for _, tag := range e.tags {
 		if tag == "todo" {
 			t = todoMark
 			continue
 		}
-		tagslist += "#" + tag
-		if i != len(e.tags)-1 {
-			tagslist += " "
-		}
+		tagslist += "#" + tag + " "
 	}
 
+	tagslist = strings.TrimSpace(tagslist)
 	result := fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text))
 	if len(e.tags) == 0 {
 		return result
