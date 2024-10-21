@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
@@ -58,7 +59,7 @@ func main() {
 		fmt.Println("Error filling the form:", err)
 		os.Exit(1)
 	}
-	out := entry.NewEntry(text, tags).Build()
+	out := entry.NewEntry(text, tags).Build(time.Now())
 
 	_, err = file.WriteString("\n" + out)
 	if err != nil {

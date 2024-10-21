@@ -23,9 +23,8 @@ func NewEntry(text string, tags []string) Entry {
 	}
 }
 
-func (e Entry) Build() string {
-	currentTime := time.Now()
-	formattedTime := fmt.Sprintf("%d:%02d", currentTime.Hour(), currentTime.Minute())
+func (e Entry) Build(time time.Time) string {
+	formattedTime := fmt.Sprintf("%d:%02d", time.Hour(), time.Minute())
 
 	t := ""
 	tagslist := ""
