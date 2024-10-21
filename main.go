@@ -30,7 +30,7 @@ func main() {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewText().
-				Title("Capture this").
+				Title("Enter your note ✍️").
 				ShowLineNumbers(true).
 				Validate(func(in string) error {
 					in = strings.TrimSpace(in)
