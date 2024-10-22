@@ -62,7 +62,7 @@ func main() {
 		),
 	)
 
-	if err := form.Run(); err != nil {
+	if err = form.Run(); err != nil {
 		fmt.Println("Error filling the form:", err)
 		saveDraftIfNeeded(d)
 
