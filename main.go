@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"git.sr.ht/~alphatroya/atr-capture/draft"
 	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
 	"github.com/charmbracelet/huh"
@@ -26,8 +27,8 @@ func main() {
 	}
 	defer file.Close()
 
-	var text string
-	var tags []string
+	d := newDraft()
+	var isTodo bool
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewText().
@@ -40,26 +41,41 @@ func main() {
 					}
 					return nil
 				}).
-				Value(&text),
+				Value(&d.Text),
 
 			huh.NewMultiSelect[string]().
 				Title("Select tags").
 				Options(
-					huh.NewOption("TODO", "todo"),
 					huh.NewOption("📚 Book to read", "books"),
 					huh.NewOption("🛍️ Book to buy", "books-to-buy"),
 					huh.NewOption("🍿 Movie", "movies"),
 					huh.NewOption("🤔 Ideas", "ideas"),
+					huh.NewOption("✍️ Blog", "blog"),
 				).
-				Value(&tags),
+				Value(&d.Tags),
+
+			huh.NewConfirm().
+				Title("Mark your note as TODO?").
+				Value(&isTodo),
 		),
 	)
 
 	if err := form.Run(); err != nil {
 		fmt.Println("Error filling the form:", err)
+		if !d.IsEmpty() {
+			if err := draft.SaveDraft(d); err != nil {
+				fmt.Println("Error saving the draft: ", err)
+			} else {
+				fmt.Println("Draft saved for future use")
+			}
+		}
 		os.Exit(1)
 	}
-	out := entry.NewEntry(text, tags).Build(time.Now())
+
+	if isTodo {
+		d.Tags = append(d.Tags, "todo")
+	}
+	out := entry.NewEntry(d.Text, d.Tags).Build(time.Now())
 
 	_, err = file.WriteString("\n" + out)
 	if err != nil {
@@ -67,5 +83,33 @@ func main() {
 		os.Exit(1)
 	}
 
+	draft.DropDraft()
 	fmt.Println("Text appended successfully!")
+}
+
+func newDraft() draft.Draft {
+	d, restored := draft.RestoreDraft()
+	if !restored {
+		return d
+	}
+
+	usePrevDraft := true
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title("Found a draft, use it?").
+				Value(&usePrevDraft),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		fmt.Println("Error filling the form:", err)
+		os.Exit(1)
+	}
+
+	if usePrevDraft {
+		return d
+	}
+	draft.DropDraft()
+	return draft.Draft{}
 }
