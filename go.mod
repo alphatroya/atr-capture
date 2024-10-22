@@ -2,7 +2,10 @@ module git.sr.ht/~alphatroya/atr-capture
 
 go 1.23
 
-require github.com/charmbracelet/huh v0.6.0
+require (
+	github.com/charmbracelet/huh v0.6.0
+	golang.org/x/net v0.30.0
+)
 
 require (
 	github.com/atotto/clipboard v0.1.4 // indirect
@@ -26,6 +29,6 @@ require (
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 )

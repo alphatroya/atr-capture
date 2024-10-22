@@ -10,6 +10,7 @@ import (
 	"git.sr.ht/~alphatroya/atr-capture/draft"
 	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
+	"git.sr.ht/~alphatroya/atr-capture/title"
 	"github.com/charmbracelet/huh"
 )
 
@@ -51,6 +52,7 @@ func main() {
 					huh.NewOption("🍿 Movie", "movies"),
 					huh.NewOption("🤔 Ideas", "ideas"),
 					huh.NewOption("✍️ Blog", "blog"),
+					huh.NewOption("🌐 URL", "url"),
 				).
 				Value(&d.Tags),
 
@@ -62,29 +64,59 @@ func main() {
 
 	if err := form.Run(); err != nil {
 		fmt.Println("Error filling the form:", err)
-		if !d.IsEmpty() {
-			if err := draft.SaveDraft(d); err != nil {
-				fmt.Println("Error saving the draft: ", err)
-			} else {
-				fmt.Println("Draft saved for future use")
-			}
-		}
+		saveDraftIfNeeded(d)
+
 		os.Exit(1)
 	}
 
 	if isTodo {
 		d.Tags = append(d.Tags, "todo")
 	}
-	out := entry.NewEntry(d.Text, d.Tags).Build(time.Now())
 
+	d, err = requestTitleIfNeeded(d)
+	if err != nil {
+		fmt.Println("Error requesting page title: ", err)
+		saveDraftIfNeeded(d)
+		os.Exit(1)
+	}
+
+	out := entry.NewEntry(d.Text, d.Tags).Build(time.Now())
 	_, err = file.WriteString("\n" + out)
 	if err != nil {
-		fmt.Println("Error writing to the file:", err)
+		fmt.Println("Error writing to the file: ", err)
+		saveDraftIfNeeded(d)
 		os.Exit(1)
 	}
 
 	draft.DropDraft()
 	fmt.Println("Text appended successfully!")
+}
+
+func saveDraftIfNeeded(d draft.Draft) {
+	if !d.IsEmpty() {
+		if err := draft.SaveDraft(d); err != nil {
+			fmt.Println("Error saving the draft: ", err)
+		} else {
+			fmt.Println("Draft saved for future use")
+		}
+	}
+}
+
+func requestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
+	for i, tag := range d.Tags {
+		if tag == "url" {
+			d.Tags = append(d.Tags[:i], d.Tags[i+1:]...)
+
+			t, err := title.FetchTitle(d.Text)
+			if err != nil {
+				return d, err
+			}
+
+			d.Text = fmt.Sprintf("[%s](%s)", t, d.Text)
+			return d, nil
+		}
+	}
+	return d, nil
 }
 
 func newDraft() draft.Draft {
