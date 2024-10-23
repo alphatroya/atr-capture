@@ -53,6 +53,9 @@ func main() {
 					huh.NewOption("🤔 Ideas", "ideas"),
 					huh.NewOption("✍️ Blog", "blog"),
 					huh.NewOption("🌐 URL", "url"),
+					huh.NewOption("🪷 Meditation", "meditation"),
+					huh.NewOption("🏃‍♂️ Running", "running"),
+					huh.NewOption("⚖️ Weight", "bodyweight"),
 				).
 				Value(&d.Tags),
 
