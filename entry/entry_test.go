@@ -17,23 +17,23 @@ func TestEntryResultBuilding(t *testing.T) {
 	}{
 		{
 			in:       "123",
-			expected: "- **9:45** 123",
+			expected: "- **09:45** 123",
 		},
 		{
 			in: `112
 123`,
-			expected: `- **9:45** 112
+			expected: `- **09:45** 112
   123`,
 		},
 		{
 			in:       "abc",
 			taglist:  []string{"a", "b"},
-			expected: "- **9:45** abc #a #b",
+			expected: "- **09:45** abc #a #b",
 		},
 		{
 			in:       "abc",
 			taglist:  []string{"a", "todo"},
-			expected: "- TODO **9:45** abc #a",
+			expected: "- TODO **09:45** abc #a",
 		},
 	}
 
