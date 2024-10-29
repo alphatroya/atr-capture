@@ -3,10 +3,16 @@ package title
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
 )
+
+func ContainsHTTPLink(s string) bool {
+	re := regexp.MustCompile(`http[s]?://[^\s]+`)
+	return re.MatchString(s)
+}
 
 // FetchTitle fetches the HTML title of the page at the given URL
 func FetchTitle(url string) (string, error) {

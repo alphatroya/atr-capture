@@ -52,7 +52,6 @@ func main() {
 					huh.NewOption("🍿 Movie", "movies"),
 					huh.NewOption("🤔 Ideas", "ideas"),
 					huh.NewOption("✍️ Blog", "blog"),
-					huh.NewOption("🌐 URL", "url"),
 					huh.NewOption("🪷 Meditation", "meditation"),
 					huh.NewOption("🏃‍♂️ Running", "running"),
 					huh.NewOption("⚖️ Weight", "bodyweight"),
@@ -106,20 +105,23 @@ func saveDraftIfNeeded(d draft.Draft) {
 }
 
 func requestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
-	for i, tag := range d.Tags {
-		if tag == "url" {
-			d.Tags = append(d.Tags[:i], d.Tags[i+1:]...)
+	fragments := strings.Split(d.Text, " ")
 
-			t, err := title.FetchTitle(d.Text)
-			if err != nil {
-				return d, err
+	var results []string
+	for _, fragment := range fragments {
+		if len(fragment) != 0 && title.ContainsHTTPLink(fragment) {
+			t, err := title.FetchTitle(fragment)
+			if err == nil {
+				fragment = fmt.Sprintf("[%s](%s)", t, fragment)
 			}
-
-			d.Text = fmt.Sprintf("[%s](%s)", t, d.Text)
-			return d, nil
 		}
+
+		results = append(results, fragment)
 	}
-	return d, nil
+	return draft.Draft{
+		Text: strings.Join(results, " "),
+		Tags: d.Tags,
+	}, nil
 }
 
 func newDraft() draft.Draft {
