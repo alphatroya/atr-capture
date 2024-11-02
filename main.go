@@ -78,13 +78,6 @@ func main() {
 	}
 
 	d = quote.FormatQuoteIfNeeded(d)
-	// if err != nil {
-	// 	fmt.Println("Error formatting quote: ", err)
-	// 	// TODO: rewrite to panic
-	// 	saveDraftIfNeeded(d)
-	// 	os.Exit(1)
-	// }
-
 	d, err = title.RequestTitleIfNeeded(d)
 	if err != nil {
 		fmt.Println("Error requesting page title: ", err)
