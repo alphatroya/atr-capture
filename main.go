@@ -91,7 +91,7 @@ func main() {
 	}
 
 	draft.DropDraft()
-	fmt.Println("Text appended successfully!")
+	fmt.Println("The text has been successfully appended!")
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
