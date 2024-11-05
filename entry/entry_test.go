@@ -35,6 +35,11 @@ func TestEntryResultBuilding(t *testing.T) {
 			taglist:  []string{"a", "todo"},
 			expected: "- TODO **09:45** abc #a",
 		},
+		{
+			in:       "abc\nbac",
+			taglist:  []string{"a"},
+			expected: "- **09:45** abc #a\n  bac",
+		},
 	}
 
 	for _, test := range tests {

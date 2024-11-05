@@ -37,18 +37,17 @@ func (e Entry) Build(time time.Time) string {
 	}
 
 	tagslist = strings.TrimSpace(tagslist)
-	result := fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text))
-	if len(e.tags) == 0 {
-		return result
-	}
-	return fmt.Sprintf("%s %s", result, tagslist)
+	return fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text, tagslist))
 }
 
-func padTextExceptFirstLine(text string) string {
+func padTextExceptFirstLine(text string, tagslist string) string {
 	lines := strings.Split(text, "\n")
 	padding := len(dashPrefix)
 	for i, line := range lines {
 		if i == 0 {
+			if tagslist != "" {
+				lines[i] = fmt.Sprintf("%s %s", line, tagslist)
+			}
 			continue
 		}
 		lines[i] = strings.Repeat(" ", padding) + line
