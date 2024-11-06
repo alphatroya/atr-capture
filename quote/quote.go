@@ -22,7 +22,7 @@ func FormatQuoteIfNeeded(d draft.Draft) draft.Draft {
 
 func padQuote(text string) string {
 	lines := strings.Split(text, "\n")
-	authorMode := false
+	var authorMode bool
 	if len(lines) > 3 && lines[len(lines)-2] == "" {
 		authorMode = true
 	}
