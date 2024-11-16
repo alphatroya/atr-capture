@@ -13,10 +13,15 @@ type Envs struct {
 }
 
 const journalsFolder = "journals/"
+const pagesFolder = "pages/"
 
 func (e Envs) TodayJournalPath() string {
 	currentDate := time.Now()
 	return e.path + journalsFolder + currentDate.Format("2006_01_02") + ".md"
+}
+
+func (e Envs) PagesPath() string {
+	return e.path + pagesFolder
 }
 
 func CheckEnvs() (Envs, error) {

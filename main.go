@@ -16,18 +16,11 @@ import (
 )
 
 func main() {
-	envs, err := env.CheckEnvs()
+	_, err := env.CheckEnvs()
 	if err != nil {
 		fmt.Printf("Error in configuration: %s\n", err)
 		os.Exit(1)
 	}
-
-	file, err := os.OpenFile(envs.TodayJournalPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-	if err != nil {
-		fmt.Println("Error opening the file:", err)
-		os.Exit(1)
-	}
-	defer file.Close()
 
 	d := newDraft()
 	var isTodo bool
@@ -84,7 +77,11 @@ func main() {
 	}
 
 	out := entry.NewEntry(d.Text, d.Tags).Build(time.Now())
-	_, err = file.WriteString("\n" + out)
+	nt, err := entry.SaveToPages(out)
+	if err == nil {
+		err = entry.SaveToJournal(nt)
+	}
+
 	if err != nil {
 		fmt.Println("Error writing to the file: ", err)
 		saveDraftIfNeeded(d)

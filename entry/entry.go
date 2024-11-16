@@ -24,8 +24,6 @@ func NewEntry(text string, tags []string) Entry {
 }
 
 func (e Entry) Build(time time.Time) string {
-	formattedTime := fmt.Sprintf("%02d:%02d", time.Hour(), time.Minute())
-
 	t := ""
 	tagslist := ""
 	for _, tag := range e.tags {
@@ -37,7 +35,7 @@ func (e Entry) Build(time time.Time) string {
 	}
 
 	tagslist = strings.TrimSpace(tagslist)
-	return fmt.Sprintf("%s%s**%s** %s", dashPrefix, t, formattedTime, padTextExceptFirstLine(e.text, tagslist))
+	return fmt.Sprintf("%s%s %s", dashPrefix, t, padTextExceptFirstLine(e.text, tagslist))
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
