@@ -27,8 +27,10 @@ func init() {
 }
 
 type Draft struct {
-	Text string   `json:"text"`
-	Tags []string `json:"tags"`
+	Text    string   `json:"text"`
+	Tags    []string `json:"tags"`
+	URL     string   `json:"url"`
+	Content string   `jsong:"content"`
 }
 
 func (d Draft) IsEmpty() bool {

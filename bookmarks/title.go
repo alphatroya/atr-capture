@@ -1,4 +1,4 @@
-package title
+package bookmarks
 
 import (
 	"fmt"
@@ -18,11 +18,13 @@ func containsHTTPLink(s string) bool {
 func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
 	fragments := strings.Split(d.Text, " ")
 
+	var url string
 	var results []string
 	for _, fragment := range fragments {
 		if len(fragment) != 0 && containsHTTPLink(fragment) {
 			t, err := fetchTitle(fragment)
 			if err == nil {
+				url = fragment
 				fragment = fmt.Sprintf("[%s](%s)", t, fragment)
 			}
 		}
@@ -32,6 +34,7 @@ func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
 	return draft.Draft{
 		Text: strings.Join(results, " "),
 		Tags: d.Tags,
+		URL:  url,
 	}, nil
 }
 

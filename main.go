@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
 	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/quote"
-	"git.sr.ht/~alphatroya/atr-capture/title"
 	"github.com/charmbracelet/huh"
 )
 
@@ -69,14 +69,21 @@ func main() {
 	}
 
 	d = quote.FormatQuoteIfNeeded(d)
-	d, err = title.RequestTitleIfNeeded(d)
+	d, err = bookmarks.RequestTitleIfNeeded(d)
 	if err != nil {
 		fmt.Println("Error requesting page title: ", err)
 		saveDraftIfNeeded(d)
 		os.Exit(1)
 	}
 
-	out := entry.NewEntry(d.Text, d.Tags).Build(time.Now())
+	d, err = bookmarks.RequestPage(d)
+	if err != nil {
+		fmt.Println("Error requesting page content: ", err)
+		saveDraftIfNeeded(d)
+		os.Exit(1)
+	}
+
+	out := entry.NewEntry(d.Text, d.Tags, d.Content).Build(time.Now())
 	nt, err := entry.SaveToPages(out)
 	if err == nil {
 		err = entry.SaveToJournal(nt)

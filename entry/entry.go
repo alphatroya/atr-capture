@@ -12,14 +12,16 @@ const (
 )
 
 type Entry struct {
-	text string
-	tags []string
+	text    string
+	tags    []string
+	content string
 }
 
-func NewEntry(text string, tags []string) Entry {
+func NewEntry(text string, tags []string, content string) Entry {
 	return Entry{
-		text: text,
-		tags: tags,
+		text:    text,
+		tags:    tags,
+		content: content,
 	}
 }
 
@@ -35,7 +37,11 @@ func (e Entry) Build(time time.Time) string {
 	}
 
 	tagslist = strings.TrimSpace(tagslist)
-	return fmt.Sprintf("%s%s %s", dashPrefix, t, padTextExceptFirstLine(e.text, tagslist))
+	result := fmt.Sprintf("%s%s %s", dashPrefix, t, padTextExceptFirstLine(e.text, tagslist))
+	if e.content == "" {
+		return result
+	}
+	return fmt.Sprintf("%s\n\n---\n%s", result, e.content)
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
