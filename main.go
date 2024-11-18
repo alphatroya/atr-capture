@@ -69,18 +69,20 @@ func main() {
 	}
 
 	d = quote.FormatQuoteIfNeeded(d)
-	d, err = bookmarks.RequestTitleIfNeeded(d)
+	d, containURL, err := bookmarks.RequestTitleIfNeeded(d)
 	if err != nil {
 		fmt.Println("Error requesting page title: ", err)
 		saveDraftIfNeeded(d)
 		os.Exit(1)
 	}
 
-	d, err = bookmarks.RequestPage(d)
-	if err != nil {
-		fmt.Println("Error requesting page content: ", err)
-		saveDraftIfNeeded(d)
-		os.Exit(1)
+	if containURL {
+		d, err = requestPage(d)
+		if err != nil {
+			fmt.Println("Error requesting page content: ", err)
+			saveDraftIfNeeded(d)
+			os.Exit(1)
+		}
 	}
 
 	out := entry.NewEntry(d.Text, d.Tags, d.Content).Build(time.Now())
@@ -97,6 +99,26 @@ func main() {
 
 	draft.DropDraft()
 	fmt.Println("The text has been successfully appended!")
+}
+
+func requestPage(d draft.Draft) (draft.Draft, error) {
+	requestContent := false
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title("Request content?").
+				Value(&requestContent),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		return d, err
+	}
+
+	if requestContent {
+		return bookmarks.RequestPage(d)
+	}
+	return d, nil
 }
 
 func saveDraftIfNeeded(d draft.Draft) {

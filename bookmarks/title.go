@@ -15,7 +15,7 @@ func containsHTTPLink(s string) bool {
 	return re.MatchString(s)
 }
 
-func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
+func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
 	fragments := strings.Split(d.Text, " ")
 
 	var url string
@@ -35,7 +35,7 @@ func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, error) {
 		Text: strings.Join(results, " "),
 		Tags: d.Tags,
 		URL:  url,
-	}, nil
+	}, url != "", nil
 }
 
 // FetchTitle fetches the HTML title of the page at the given URL

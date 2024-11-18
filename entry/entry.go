@@ -17,6 +17,14 @@ type Entry struct {
 	content string
 }
 
+func (e Entry) padContent(padding int) string {
+	lines := strings.Split(e.content, "\n")
+	for i, line := range lines {
+		lines[i] = strings.Repeat(" ", padding) + line
+	}
+	return strings.Join(lines, "\n")
+}
+
 func NewEntry(text string, tags []string, content string) Entry {
 	return Entry{
 		text:    text,
@@ -41,7 +49,7 @@ func (e Entry) Build(time time.Time) string {
 	if e.content == "" {
 		return result
 	}
-	return fmt.Sprintf("%s\n\n---\n%s", result, e.content)
+	return fmt.Sprintf("%s\n\n%s", result, e.padContent(4))
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
