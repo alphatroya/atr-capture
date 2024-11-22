@@ -9,15 +9,16 @@ import (
 )
 
 func RequestPage(d draft.Draft) (draft.Draft, error) {
-	if d.URL == "" {
+	if d.Post == nil {
 		return d, nil
 	}
 
-	article, err := readability.FromURL(d.URL, 30*time.Second)
+	article, err := readability.FromURL(d.Post.URL, 30*time.Second)
 	if err != nil {
-		return d, fmt.Errorf("failed to get data content, url=%s, %w", d.URL, err)
+		return d, fmt.Errorf("failed to get data content, url=%s, %w", d.Post.URL, err)
 	}
 
-	d.Content = article.Content
+	d.Post.Title = article.Title
+	d.Post.Content = article.Content
 	return d, nil
 }

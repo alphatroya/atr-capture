@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
@@ -85,7 +84,7 @@ func main() {
 		}
 	}
 
-	out := entry.NewEntry(d.Text, d.Tags, d.Content).Build(time.Now())
+	out := entry.Build(d)
 	nt, err := entry.SaveToPages(out)
 	if err == nil {
 		err = entry.SaveToJournal(nt)

@@ -34,7 +34,9 @@ func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
 	return draft.Draft{
 		Text: strings.Join(results, " "),
 		Tags: d.Tags,
-		URL:  url,
+		Post: &draft.Post{
+			URL: url,
+		},
 	}, url != "", nil
 }
 
