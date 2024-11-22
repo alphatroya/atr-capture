@@ -98,7 +98,7 @@ func main() {
 	}
 
 	draft.DropDraft()
-	fmt.Println("The text has been successfully appended!")
+	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
 }
 
 func requestPage(d draft.Draft) (draft.Draft, error) {
