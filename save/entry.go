@@ -25,11 +25,11 @@ func buildNote(d draft.Draft, noteTitle string) string {
 	}
 
 	tagslist = strings.TrimSpace(tagslist)
-	result := fmt.Sprintf("%s%s %s", dashPrefix, t, padTextExceptFirstLine(d.Text, tagslist))
+	result := fmt.Sprintf("%s%s %s\n", dashPrefix, t, padTextExceptFirstLine(d.Text, tagslist))
 	if d.Post == nil || !d.Post.IsContentAvailable() {
 		return result
 	}
-	return fmt.Sprintf("%s\n\n[[%s%s]]", result, noteTitle, bookmarkNoteSuffix)
+	return fmt.Sprintf("%s\n\n[[%s%s]]\n", result, noteTitle, bookmarkNoteSuffix)
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
