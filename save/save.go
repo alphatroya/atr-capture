@@ -46,14 +46,14 @@ func SaveToPages(d draft.Draft) (string, error) {
 	}
 
 	if d.Post != nil && d.Post.IsContentAvailable() {
-		err = SaveToPagesContent(d, noteTitle)
+		err = SaveToPagesContent(d)
 	}
 
 	return noteTitle, err
 }
 
-func SaveToPagesContent(d draft.Draft, noteTitle string) error {
-	file, err := os.OpenFile(envs.PagesPath()+noteTitle+bookmarkNoteSuffix+".md", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+func SaveToPagesContent(d draft.Draft) error {
+	file, err := os.OpenFile(envs.PagesPath()+d.Post.Title+".md", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error opening the page content file: %w", err)
 	}

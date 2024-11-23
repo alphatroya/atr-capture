@@ -8,9 +8,8 @@ import (
 )
 
 const (
-	dashPrefix         = "- "
-	todoMark           = "TODO "
-	bookmarkNoteSuffix = "_bookmark"
+	dashPrefix = "- "
+	todoMark   = "TODO "
 )
 
 func buildNote(d draft.Draft, noteTitle string) string {
@@ -29,7 +28,7 @@ func buildNote(d draft.Draft, noteTitle string) string {
 	if d.Post == nil || !d.Post.IsContentAvailable() {
 		return result
 	}
-	return fmt.Sprintf("%s\n\n[[%s%s]]\n", result, noteTitle, bookmarkNoteSuffix)
+	return fmt.Sprintf("%s\n[[%s]]\n", result, d.Post.Title)
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
