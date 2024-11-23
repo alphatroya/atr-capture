@@ -1,4 +1,4 @@
-package entry
+package save
 
 import (
 	"fmt"
@@ -8,11 +8,12 @@ import (
 )
 
 const (
-	dashPrefix = "- "
-	todoMark   = "TODO "
+	dashPrefix         = "- "
+	todoMark           = "TODO "
+	bookmarkNoteSuffix = "_bookmark"
 )
 
-func Build(d draft.Draft) string {
+func buildNote(d draft.Draft, noteTitle string) string {
 	t := ""
 	tagslist := ""
 	for _, tag := range d.Tags {
@@ -25,10 +26,10 @@ func Build(d draft.Draft) string {
 
 	tagslist = strings.TrimSpace(tagslist)
 	result := fmt.Sprintf("%s%s %s", dashPrefix, t, padTextExceptFirstLine(d.Text, tagslist))
-	if d.Post == nil || d.Post.Title == "" {
+	if d.Post == nil || !d.Post.IsContentAvailable() {
 		return result
 	}
-	return fmt.Sprintf("%s\n\n[[%s]]", result, d.Post.Title)
+	return fmt.Sprintf("%s\n\n[[%s%s]]", result, noteTitle, bookmarkNoteSuffix)
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {

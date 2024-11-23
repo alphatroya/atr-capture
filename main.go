@@ -8,9 +8,9 @@ import (
 
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
-	"git.sr.ht/~alphatroya/atr-capture/entry"
 	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/quote"
+	"git.sr.ht/~alphatroya/atr-capture/save"
 	"github.com/charmbracelet/huh"
 )
 
@@ -84,10 +84,9 @@ func main() {
 		}
 	}
 
-	out := entry.Build(d)
-	nt, err := entry.SaveToPages(out)
+	nt, err := save.SaveToPages(d)
 	if err == nil {
-		err = entry.SaveToJournal(nt)
+		err = save.SaveToJournal(nt)
 	}
 
 	if err != nil {

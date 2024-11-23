@@ -38,6 +38,10 @@ type Post struct {
 	Content string `jsong:"content"`
 }
 
+func (p *Post) IsContentAvailable() bool {
+	return p.Title != "" && p.Content != ""
+}
+
 func (d Draft) IsEmpty() bool {
 	return len(d.Text) == 0 && len(d.Tags) == 0
 }
