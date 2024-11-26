@@ -16,23 +16,29 @@ func containsHTTPLink(s string) bool {
 }
 
 func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
-	fragments := strings.Split(d.Text, " ")
-
 	var url string
-	var results []string
-	for _, fragment := range fragments {
-		if len(fragment) != 0 && containsHTTPLink(fragment) {
-			t, err := fetchTitle(fragment)
-			if err == nil {
-				url = fragment
-				fragment = fmt.Sprintf("[%s](%s)", t, fragment)
+	lines := strings.Split(d.Text, "\n")
+	linesResult := make([]string, 0, len(lines))
+	for _, line := range lines {
+		fragments := strings.Split(line, " ")
+
+		fragmentsResult := make([]string, 0, len(fragments))
+		for _, fragment := range fragments {
+			if len(fragment) != 0 && containsHTTPLink(fragment) {
+				t, err := fetchTitle(fragment)
+				if err == nil {
+					url = fragment
+					fragment = fmt.Sprintf("[%s](%s)", t, fragment)
+				}
 			}
+
+			fragmentsResult = append(fragmentsResult, fragment)
 		}
 
-		results = append(results, fragment)
+		linesResult = append(linesResult, strings.Join(fragmentsResult, " "))
 	}
 	return draft.Draft{
-		Text: strings.Join(results, " "),
+		Text: strings.Join(linesResult, "\n"),
 		Tags: d.Tags,
 		Post: &draft.Post{
 			URL: url,
