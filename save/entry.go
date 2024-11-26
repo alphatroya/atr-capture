@@ -24,11 +24,7 @@ func buildNote(d draft.Draft, noteTitle string) string {
 	}
 
 	tagslist = strings.TrimSpace(tagslist)
-	result := fmt.Sprintf("%s%s %s\n", dashPrefix, t, padTextExceptFirstLine(d.Text, tagslist))
-	if d.Post == nil || !d.Post.IsContentAvailable() {
-		return result
-	}
-	return fmt.Sprintf("%s\n[[%s]]\n", result, d.Post.Title)
+	return fmt.Sprintf("%s%s %s\n", dashPrefix, t, padTextExceptFirstLine(d.Text, tagslist))
 }
 
 func padTextExceptFirstLine(text string, tagslist string) string {
