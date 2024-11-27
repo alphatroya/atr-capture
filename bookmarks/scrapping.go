@@ -8,7 +8,7 @@ import (
 	readability "github.com/go-shiori/go-readability"
 )
 
-func RequestPage(d draft.Draft) (draft.Draft, error) {
+func requestPage(d draft.Draft) (draft.Draft, error) {
 	if d.Post == nil {
 		return d, nil
 	}

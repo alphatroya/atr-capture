@@ -33,7 +33,7 @@ func SaveToJournal(nt string) error {
 	return err
 }
 
-func SaveToPages(d draft.Draft) (string, error) {
+func SaveToPages(d draft.Draft, saveContent bool) (string, error) {
 	noteTitle := generator.GenerateQuickNoteTitle(time.Now())
 	file, err := os.OpenFile(envs.PagesPath()+noteTitle+".md", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
@@ -46,7 +46,7 @@ func SaveToPages(d draft.Draft) (string, error) {
 		return noteTitle, fmt.Errorf("error writing the page file: %w", err)
 	}
 
-	if d.Post != nil && d.Post.IsContentAvailable() {
+	if saveContent {
 		err = SaveToPagesContent(d)
 	}
 

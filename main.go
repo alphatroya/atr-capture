@@ -75,8 +75,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	saveContent := false
 	if containURL {
-		d, err = requestPage(d)
+		saveContent = requestSavingContent()
 		if err != nil {
 			fmt.Println("Error requesting page content: ", err)
 			saveDraftIfNeeded(d)
@@ -84,7 +85,7 @@ func main() {
 		}
 	}
 
-	nt, err := save.SaveToPages(d)
+	nt, err := save.SaveToPages(d, saveContent)
 	if err == nil {
 		err = save.SaveToJournal(nt)
 	}
@@ -99,24 +100,19 @@ func main() {
 	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
 }
 
-func requestPage(d draft.Draft) (draft.Draft, error) {
-	requestContent := false
+func requestSavingContent() (saveContent bool) {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Request content?").
-				Value(&requestContent),
+				Value(&saveContent),
 		),
 	)
 
 	if err := form.Run(); err != nil {
-		return d, err
+		return
 	}
-
-	if requestContent {
-		return bookmarks.RequestPage(d)
-	}
-	return d, nil
+	return
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
