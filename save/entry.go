@@ -12,7 +12,7 @@ const (
 	todoMark   = "TODO "
 )
 
-func buildNote(d draft.Draft, noteTitle string) string {
+func buildNote(d draft.Draft) string {
 	t := ""
 	tagslist := ""
 	for _, tag := range d.Tags {

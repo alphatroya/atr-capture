@@ -41,7 +41,7 @@ func SaveToPages(d draft.Draft, saveContent bool) (string, error) {
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(buildNote(d, noteTitle))
+	_, err = file.WriteString(buildNote(d))
 	if err != nil {
 		return noteTitle, fmt.Errorf("error writing the page file: %w", err)
 	}
