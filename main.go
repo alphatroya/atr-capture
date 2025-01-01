@@ -15,8 +15,7 @@ import (
 )
 
 func main() {
-	_, err := env.CheckEnvs()
-	if err != nil {
+	if _, err := env.CheckEnvs(); err != nil {
 		fmt.Printf("Error in configuration: %s\n", err)
 		os.Exit(1)
 	}
@@ -56,10 +55,9 @@ func main() {
 		),
 	)
 
-	if err = form.Run(); err != nil {
+	if err := form.Run(); err != nil {
 		fmt.Println("Error filling the form:", err)
 		saveDraftIfNeeded(d)
-
 		os.Exit(1)
 	}
 
@@ -116,9 +114,10 @@ func requestSavingContent() (saveContent bool) {
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
-	if err := d.SaveIfNeeded(); err != nil {
+	saved, err := d.SaveIfNeeded()
+	if err != nil {
 		fmt.Println("Error saving the draft: ", err)
-	} else {
+	} else if saved {
 		fmt.Println("Draft saved for future use")
 	}
 }
