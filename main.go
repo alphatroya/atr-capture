@@ -86,7 +86,7 @@ func main() {
 
 	saveContent := false
 	if containURL {
-		saveContent = requestSavingContent()
+		saveContent = forms.RequestSavingContent()
 		if err != nil {
 			fmt.Println("Error requesting page content: ", err)
 			saveDraftIfNeeded(d)
@@ -107,18 +107,6 @@ func main() {
 
 	draft.DropDraft()
 	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
-}
-
-func requestSavingContent() (confirm bool) {
-	huh.NewForm(
-		huh.NewGroup(
-			huh.NewConfirm().
-				Title("Request content?").
-				Value(&confirm),
-		),
-	).
-		Run()
-	return
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
