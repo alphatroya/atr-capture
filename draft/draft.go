@@ -46,8 +46,12 @@ func (d Draft) IsEmpty() bool {
 	return len(d.Text) == 0 && len(d.Tags) == 0
 }
 
-func SaveDraft(draft Draft) error {
-	data, err := json.Marshal(draft)
+func (d Draft) SaveIfNeeded() error {
+	if d.IsEmpty() {
+		return nil
+	}
+
+	data, err := json.Marshal(d)
 	if err != nil {
 		return fmt.Errorf("error marshaling draft to JSON: %w", err)
 	}

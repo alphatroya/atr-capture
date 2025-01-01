@@ -1,4 +1,4 @@
-package generator
+package save
 
 import (
 	"testing"
@@ -42,7 +42,7 @@ func TestQuicknoteName(t *testing.T) {
 			0,
 			time.UTC,
 		)
-		result := GenerateQuickNoteTitle(time)
+		result := generateQuickNoteTitle(time)
 		if result != test.expected {
 			t.Errorf("Build(%v) = \"%s\"; want \"%s\"", time, result, test.expected)
 		}

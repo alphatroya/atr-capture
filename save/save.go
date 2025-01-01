@@ -8,7 +8,6 @@ import (
 
 	"git.sr.ht/~alphatroya/atr-capture/draft"
 	"git.sr.ht/~alphatroya/atr-capture/env"
-	"git.sr.ht/~alphatroya/atr-capture/generator"
 )
 
 var envs env.Envs
@@ -34,8 +33,8 @@ func SaveToJournal(nt string) error {
 }
 
 func SaveToPages(d draft.Draft, saveContent bool) (string, error) {
-	noteTitle := generator.GenerateQuickNoteTitle(time.Now())
-	file, err := os.OpenFile(envs.PagesPath()+noteTitle+".md", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	noteTitle := generateQuickNoteTitle(time.Now())
+	file, err := os.OpenFile(envs.PagesFolder()+noteTitle+".md", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		return noteTitle, fmt.Errorf("error opening the page file: %w", err)
 	}

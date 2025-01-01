@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	d := newDraft()
+	d := restoreOrNewDraft()
 	var isTodo bool
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -116,27 +116,25 @@ func requestSavingContent() (saveContent bool) {
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
-	if !d.IsEmpty() {
-		if err := draft.SaveDraft(d); err != nil {
-			fmt.Println("Error saving the draft: ", err)
-		} else {
-			fmt.Println("Draft saved for future use")
-		}
+	if err := d.SaveIfNeeded(); err != nil {
+		fmt.Println("Error saving the draft: ", err)
+	} else {
+		fmt.Println("Draft saved for future use")
 	}
 }
 
-func newDraft() draft.Draft {
+func restoreOrNewDraft() draft.Draft {
 	d, restored := draft.RestoreDraft()
 	if !restored {
 		return d
 	}
 
-	usePrevDraft := true
+	confirmRestore := true
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Found a draft, use it?").
-				Value(&usePrevDraft),
+				Value(&confirmRestore),
 		),
 	)
 
@@ -145,7 +143,7 @@ func newDraft() draft.Draft {
 		os.Exit(1)
 	}
 
-	if usePrevDraft {
+	if confirmRestore {
 		return d
 	}
 	draft.DropDraft()
