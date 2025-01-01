@@ -9,6 +9,7 @@ import (
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
 	"git.sr.ht/~alphatroya/atr-capture/env"
+	"git.sr.ht/~alphatroya/atr-capture/forms"
 	"git.sr.ht/~alphatroya/atr-capture/quote"
 	"git.sr.ht/~alphatroya/atr-capture/save"
 	"github.com/charmbracelet/huh"
@@ -20,7 +21,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	d := restoreOrNewDraft()
+	d := draft.RestoreOrNewDraft(
+		func() bool {
+			confirm, err := forms.ConfirmRestoreDraftDialog()
+			if err != nil {
+				fmt.Println("Error filling the form: ", err)
+				os.Exit(1)
+			}
+			return confirm
+		},
+	)
+
 	var isTodo bool
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -117,31 +128,4 @@ func saveDraftIfNeeded(d draft.Draft) {
 	} else if saved {
 		fmt.Println("Draft saved for future use")
 	}
-}
-
-func restoreOrNewDraft() draft.Draft {
-	d, draftExist := draft.RestoreDraft()
-	if !draftExist {
-		return d
-	}
-
-	confirm := true
-	form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewConfirm().
-				Title("Found a draft, use it?").
-				Value(&confirm),
-		),
-	)
-
-	if err := form.Run(); err != nil {
-		fmt.Println("Error filling the form: ", err)
-		os.Exit(1)
-	}
-
-	if confirm {
-		return d
-	}
-	draft.DropDraft()
-	return draft.Draft{}
 }
