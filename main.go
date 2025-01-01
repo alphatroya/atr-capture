@@ -98,18 +98,15 @@ func main() {
 	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
 }
 
-func requestSavingContent() (saveContent bool) {
-	form := huh.NewForm(
+func requestSavingContent() (confirm bool) {
+	huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Request content?").
-				Value(&saveContent),
+				Value(&confirm),
 		),
-	)
-
-	if err := form.Run(); err != nil {
-		return
-	}
+	).
+		Run()
 	return
 }
 
@@ -123,26 +120,26 @@ func saveDraftIfNeeded(d draft.Draft) {
 }
 
 func restoreOrNewDraft() draft.Draft {
-	d, restored := draft.RestoreDraft()
-	if !restored {
+	d, draftExist := draft.RestoreDraft()
+	if !draftExist {
 		return d
 	}
 
-	confirmRestore := true
+	confirm := true
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().
 				Title("Found a draft, use it?").
-				Value(&confirmRestore),
+				Value(&confirm),
 		),
 	)
 
 	if err := form.Run(); err != nil {
-		fmt.Println("Error filling the form:", err)
+		fmt.Println("Error filling the form: ", err)
 		os.Exit(1)
 	}
 
-	if confirmRestore {
+	if confirm {
 		return d
 	}
 	draft.DropDraft()
