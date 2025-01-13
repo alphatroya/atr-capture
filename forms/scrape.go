@@ -6,7 +6,7 @@ func RequestSavingContent() (confirm bool) {
 	huh.NewForm(
 		huh.NewGroup(
 			huh.NewConfirm().
-				Title("Request content?").
+				Title("Save page content to ~/Downloads?").
 				Value(&confirm),
 		),
 	).
