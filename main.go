@@ -11,7 +11,6 @@ import (
 	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/forms"
 	"git.sr.ht/~alphatroya/atr-capture/save"
-	"git.sr.ht/~alphatroya/atr-capture/tags"
 	"github.com/charmbracelet/huh"
 )
 
@@ -47,16 +46,12 @@ func main() {
 	checkErr("Form aborted: ", err, d)
 
 	d, containURL, err := bookmarks.RequestTitleIfNeeded(d)
-	d.Tags, err = forms.PickUpTags(tags.RequestTags())
 	checkErr("Form aborted: ", err, d)
 
-	var isTodo bool
-	if huh.NewConfirm().
-		Title("Mark your note as TODO?").
-		Value(&isTodo).
-		Run(); isTodo {
-		d.Tags = append(d.Tags, "todo")
-	}
+	err = huh.NewConfirm().
+		Title("Mark this note as TODO?").
+		Value(&d.IsTODO).
+		Run()
 	checkErr("Form aborted: ", err, d)
 
 	saveContent := false

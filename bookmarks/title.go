@@ -37,8 +37,8 @@ func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
 		linesResult = append(linesResult, strings.Join(fragmentsResult, " "))
 	}
 	return draft.Draft{
-		Text: strings.Join(linesResult, "\n"),
-		Tags: d.Tags,
-		Post: d.Post,
+		Text:   strings.Join(linesResult, "\n"),
+		Post:   d.Post,
+		IsTODO: d.IsTODO,
 	}, d.Post != nil, nil
 }

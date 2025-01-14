@@ -27,9 +27,9 @@ func init() {
 }
 
 type Draft struct {
-	Text string   `json:"text"`
-	Tags []string `json:"tags"`
-	Post *Post    `json:"post"`
+	Text   string `json:"text"`
+	Post   *Post  `json:"post"`
+	IsTODO bool   `json:"isTodo"`
 }
 
 type Post struct {
@@ -43,7 +43,7 @@ func (p *Post) IsContentAvailable() bool {
 }
 
 func (d Draft) IsEmpty() bool {
-	return len(d.Text) == 0 && len(d.Tags) == 0
+	return len(d.Text) == 0
 }
 
 func (d Draft) SaveIfNeeded() (bool, error) {
