@@ -1,10 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
-	"strings"
+	"os/exec"
 
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
@@ -20,31 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	d := draft.RestoreOrNewDraft(
-		func() bool {
-			confirm, err := forms.ConfirmRestoreDraftDialog()
-			if err != nil {
-				fmt.Println("Error filling the form: ", err)
-				os.Exit(1)
-			}
-			return confirm
-		},
-	)
-
-	err := huh.NewText().
-		Title("Enter your note ✍️").
-		ShowLineNumbers(true).
-		Validate(func(in string) error {
-			in = strings.TrimSpace(in)
-			if len(in) == 0 {
-				return errors.New("quick capture text can't be empty")
-			}
-			return nil
-		}).
-		Value(&d.Text).
-		Run()
-	checkErr("Form aborted: ", err, d)
-
+	d := enterText()
 	d, containURL, err := bookmarks.RequestTitleIfNeeded(d)
 	checkErr("Form aborted: ", err, d)
 
@@ -69,6 +44,52 @@ func main() {
 
 	draft.DropDraft()
 	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
+}
+
+func enterText() draft.Draft {
+	d := draft.RestoreOrNewDraft(
+		func() bool {
+			confirm, err := forms.ConfirmRestoreDraftDialog()
+			if err != nil {
+				fmt.Println("Error filling the form: ", err)
+				os.Exit(1)
+			}
+			return confirm
+		},
+	)
+
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vim"
+	}
+	file, err := os.CreateTemp("", "*.md")
+	if err != nil {
+		fmt.Println("Error creating temp file: ", err)
+		os.Exit(1)
+	}
+	file.Write([]byte(d.Text))
+	cmd := exec.Command(editor, file.Name())
+
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error opening editor, editor=%s, path=%s, err=%v\n", editor, file.Name(), err)
+		os.Exit(1)
+	}
+	r, err := os.ReadFile(file.Name())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading file, path=%s, err=%v\n", file.Name(), err)
+		os.Exit(1)
+	}
+	d.Text = string(r)
+	defer os.Remove(file.Name())
+	if d.Text == "" {
+		fmt.Fprintf(os.Stderr, "File is empty, aborted, path=%s \n", file.Name())
+		os.Exit(1)
+	}
+	return d
 }
 
 func saveDraftIfNeeded(d draft.Draft) {
