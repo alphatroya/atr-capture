@@ -26,52 +26,52 @@ func init() {
 func main() {
 	noteTitle := save.GenerateQuickNoteTitle(time.Now())
 	err := save.SaveToJournal(noteTitle, envs.TodayJournalPath())
+	checkErr("failed to add log to journal file: ", err)
 
 	notePath := envs.PagePath(noteTitle)
-	note := requestNoteFromUser(notePath)
+	note, err := requestNoteFromUser(notePath)
+	checkErr("failed to request note content from user: ", err)
 
 	d, err := bookmarks.ExtractAndFormatLinkTitles(note)
-	checkErr("page url title request failed: ", err)
+	checkErr("failed to extract and format link titles from the note content: ", err)
 
 	d.IsTODO, err = forms.RequestMarkAsTodo()
-	checkErr("form aborted: ", err)
+	checkErr("operation to request to mark the note as TODO was aborted or failed: ", err)
 
 	saveContent := d.ContainURL() && forms.RequestSavingContent()
 	err = save.SaveToPages(notePath, d, saveContent)
-	checkErr("error writing to the file: ", err)
+	checkErr("error writing the note to the file: ", err)
 
-	fmt.Printf("quick capture saved, a new note created: %s.md\n", noteTitle)
+	fmt.Printf("Quick capture saved. A new note has been created: %s.md\n", noteTitle)
 }
 
-func requestNoteFromUser(path string) string {
+func requestNoteFromUser(path string) (string, error) {
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
 		editor = "vim"
 	}
-	cmd := exec.Command(editor, path)
 
+	cmd := exec.Command(editor, path)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "error opening editor, editor=%s, path=%s, err=%v\n", editor, path, err)
-		os.Exit(1)
+	err := cmd.Run()
+	if err != nil {
+		return "", fmt.Errorf("requestNoteFromUser: error opening editor, editor=%s, path=%s, err=%w\n", editor, path, err)
 	}
 
 	r, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error reading file, path=%s, err=%v\n", path, err)
-		os.Exit(1)
+		return "", fmt.Errorf("requestNoteFromUser: error reading file after saving, path=%s, err=%w\n", path, err)
 	}
 
 	text := string(r)
 	if text == "" {
-		fmt.Fprintf(os.Stderr, "file is empty, aborted, path=%s \n", path)
 		os.Remove(path)
-		os.Exit(1)
+		return "", fmt.Errorf("requestNoteFromUser: note file is empty, aborted, file=%s \n", path)
 	}
-	return text
+	return text, nil
 }
 
 func checkErr(message string, err error) {
