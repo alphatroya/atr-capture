@@ -1,4 +1,4 @@
-module git.sr.ht/~alphatroya/atr-capture
+module github.com/alphatroya/atr-capture
 
 go 1.23
 

@@ -6,10 +6,10 @@ import (
 	"os/exec"
 	"time"
 
-	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
-	"git.sr.ht/~alphatroya/atr-capture/env"
-	"git.sr.ht/~alphatroya/atr-capture/forms"
-	"git.sr.ht/~alphatroya/atr-capture/save"
+	"github.com/alphatroya/atr-capture/bookmarks"
+	"github.com/alphatroya/atr-capture/env"
+	"github.com/alphatroya/atr-capture/forms"
+	"github.com/alphatroya/atr-capture/save"
 )
 
 var envs env.Envs

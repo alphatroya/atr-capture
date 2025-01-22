@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"git.sr.ht/~alphatroya/atr-capture/draft"
+	"github.com/alphatroya/atr-capture/draft"
 )
 
 func SaveToJournal(nt string, path string) error {

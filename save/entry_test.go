@@ -3,7 +3,7 @@ package save
 import (
 	"testing"
 
-	"git.sr.ht/~alphatroya/atr-capture/draft"
+	"github.com/alphatroya/atr-capture/draft"
 )
 
 func TestBuildNote(t *testing.T) {

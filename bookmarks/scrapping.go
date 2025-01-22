@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"git.sr.ht/~alphatroya/atr-capture/draft"
+	"github.com/alphatroya/atr-capture/draft"
 	"github.com/charmbracelet/huh/spinner"
 	readability "github.com/go-shiori/go-readability"
 )
