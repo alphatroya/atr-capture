@@ -4,100 +4,88 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
-	"git.sr.ht/~alphatroya/atr-capture/draft"
+	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/forms"
 	"git.sr.ht/~alphatroya/atr-capture/save"
 	"github.com/charmbracelet/huh"
 )
 
+var envs env.Envs
+
+func init() {
+	var err error
+	envs, err = env.CheckEnvs()
+	if err != nil {
+		fmt.Printf("error in configuration: unable to check environment variables: %s\n", err)
+		os.Exit(1)
+	}
+}
+
 func main() {
-	note := requestNoteFromUser()
+	noteTitle := save.GenerateQuickNoteTitle(time.Now())
+	err := save.SaveToJournal(noteTitle, envs.TodayJournalPath())
+
+	notePath := envs.PagePath(noteTitle)
+	note := requestNoteFromUser(notePath)
+
 	d, err := bookmarks.RequestTitleIfNeeded(note)
-	checkErr("page url title request failed: ", err, d)
+	checkErr("page url title request failed: ", err)
 
 	err = huh.NewConfirm().
 		Title("Mark this note as TODO?").
 		Value(&d.IsTODO).
 		Run()
-	checkErr("form aborted: ", err, d)
+	checkErr("form aborted: ", err)
 
 	saveContent := false
 	if d.ContainURL() {
 		saveContent = forms.RequestSavingContent()
-		checkErr("error requesting page content: ", err, d)
+		checkErr("error requesting page content: ", err)
 	}
 
-	nt, err := save.SaveToPages(d, saveContent)
-	if err == nil {
-		err = save.SaveToJournal(nt)
-	}
-	checkErr("error writing to the file: ", err, d)
+	err = save.SaveToPages(notePath, d, saveContent)
+	checkErr("error writing to the file: ", err)
 
-	draft.DropDraft()
-	fmt.Printf("quick capture saved, a new note created: %s.md\n", nt)
+	fmt.Printf("quick capture saved, a new note created: %s.md\n", noteTitle)
 }
 
-func requestNoteFromUser() string {
-	d := draft.RestoreOrNewDraft(
-		func() bool {
-			confirm, err := forms.ConfirmRestoreDraftDialog()
-			if err != nil {
-				fmt.Println("Error filling the form: ", err)
-				os.Exit(1)
-			}
-			return confirm
-		},
-	)
-
+func requestNoteFromUser(path string) string {
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
 		editor = "vim"
 	}
-	file, err := os.CreateTemp("", "*.md")
-	if err != nil {
-		fmt.Println("Error creating temp file: ", err)
-		os.Exit(1)
-	}
-	file.Write([]byte(d.Text))
-	cmd := exec.Command(editor, file.Name())
+	cmd := exec.Command(editor, path)
 
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error opening editor, editor=%s, path=%s, err=%v\n", editor, file.Name(), err)
+		fmt.Fprintf(os.Stderr, "error opening editor, editor=%s, path=%s, err=%v\n", editor, path, err)
 		os.Exit(1)
 	}
-	r, err := os.ReadFile(file.Name())
+
+	r, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading file, path=%s, err=%v\n", file.Name(), err)
+		fmt.Fprintf(os.Stderr, "error reading file, path=%s, err=%v\n", path, err)
 		os.Exit(1)
 	}
+
 	text := string(r)
-	defer os.Remove(file.Name())
 	if text == "" {
-		fmt.Fprintf(os.Stderr, "File is empty, aborted, path=%s \n", file.Name())
+		fmt.Fprintf(os.Stderr, "file is empty, aborted, path=%s \n", path)
+		os.Remove(path)
 		os.Exit(1)
 	}
 	return text
 }
 
-func saveDraftIfNeeded(d draft.Draft) {
-	saved, err := d.SaveIfNeeded()
-	if err != nil {
-		fmt.Println("Error saving the draft: ", err)
-	} else if saved {
-		fmt.Println("Draft saved for future use")
-	}
-}
-
-func checkErr(message string, err error, saveDraft draft.Draft) {
+func checkErr(message string, err error) {
 	if err != nil {
 		fmt.Println(message, err)
-		saveDraftIfNeeded(saveDraft)
 		os.Exit(1)
 	}
 }

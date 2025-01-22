@@ -14,13 +14,17 @@ func (e Envs) journalsFolder() string {
 	return e.path + "journals/"
 }
 
-func (e Envs) PagesFolder() string {
+func (e Envs) pagesFolder() string {
 	return e.path + "pages/"
 }
 
 func (e Envs) TodayJournalPath() string {
 	currentDate := time.Now()
 	return e.journalsFolder() + currentDate.Format("2006_01_02") + ".md"
+}
+
+func (e Envs) PagePath(noteTitle string) string {
+	return e.pagesFolder() + noteTitle + ".md"
 }
 
 func CheckEnvs() (Envs, error) {

@@ -1,7 +1,6 @@
 package draft
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -48,28 +47,4 @@ func (p *Post) IsContentAvailable() bool {
 
 func (d Draft) IsEmpty() bool {
 	return len(d.Text) == 0
-}
-
-func (d Draft) SaveIfNeeded() (bool, error) {
-	if d.IsEmpty() {
-		return false, nil
-	}
-
-	data, err := json.Marshal(d)
-	if err != nil {
-		return false, fmt.Errorf("error marshaling draft to JSON: %w", err)
-	}
-
-	file, err := os.Create(draftLocation)
-	if err != nil {
-		return false, fmt.Errorf("error creating/opening file at %s: %w", draftLocation, err)
-	}
-	defer file.Close()
-
-	_, err = file.Write(data)
-	if err != nil {
-		return false, fmt.Errorf("error writing to file: %w", err)
-	}
-
-	return true, nil
 }

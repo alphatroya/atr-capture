@@ -42,7 +42,7 @@ func TestQuicknoteName(t *testing.T) {
 			0,
 			time.UTC,
 		)
-		result := generateQuickNoteTitle(time)
+		result := GenerateQuickNoteTitle(time)
 		if result != test.expected {
 			t.Errorf("Build(%v) = \"%s\"; want \"%s\"", time, result, test.expected)
 		}
