@@ -13,7 +13,7 @@ func containsHTTPLink(s string) bool {
 	return re.MatchString(s)
 }
 
-func RequestTitleIfNeeded(text string) (draft.Draft, error) {
+func ExtractAndFormatLinkTitles(text string) (draft.Draft, error) {
 	lines := strings.Split(text, "\n")
 	linesResult := make([]string, 0, len(lines))
 	d := draft.Draft{}
@@ -22,7 +22,7 @@ func RequestTitleIfNeeded(text string) (draft.Draft, error) {
 
 		fragmentsResult := make([]string, 0, len(fragments))
 		for _, fragment := range fragments {
-			if len(fragment) != 0 && containsHTTPLink(fragment) {
+			if fragment != "" && containsHTTPLink(fragment) {
 				p, err := requestPageContent(fragment)
 				if err == nil {
 					d.Post = p

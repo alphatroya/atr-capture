@@ -10,7 +10,6 @@ import (
 	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/forms"
 	"git.sr.ht/~alphatroya/atr-capture/save"
-	"github.com/charmbracelet/huh"
 )
 
 var envs env.Envs
@@ -31,13 +30,10 @@ func main() {
 	notePath := envs.PagePath(noteTitle)
 	note := requestNoteFromUser(notePath)
 
-	d, err := bookmarks.RequestTitleIfNeeded(note)
+	d, err := bookmarks.ExtractAndFormatLinkTitles(note)
 	checkErr("page url title request failed: ", err)
 
-	err = huh.NewConfirm().
-		Title("Mark this note as TODO?").
-		Value(&d.IsTODO).
-		Run()
+	d.IsTODO, err = forms.RequestMarkAsTodo()
 	checkErr("form aborted: ", err)
 
 	saveContent := false
