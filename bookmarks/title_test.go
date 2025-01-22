@@ -13,6 +13,12 @@ func TestTitleDetection(t *testing.T) {
 			in: "https://tanaschita.com/ios-universal-links-swiftui/",
 			ex: true,
 		},
+		{
+			in: "[111](https://tanaschita.com/ios-universal-links-swiftui/)",
+		},
+		{
+			in: "abc",
+		},
 	}
 
 	for _, test := range tests {

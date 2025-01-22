@@ -6,24 +6,20 @@ import (
 
 	"git.sr.ht/~alphatroya/atr-capture/draft"
 	readability "github.com/go-shiori/go-readability"
-	"github.com/google/uuid"
 )
 
-func requestPage(d draft.Draft) (draft.Draft, error) {
-	if d.Post == nil {
-		return d, nil
-	}
-
-	article, err := readability.FromURL(d.Post.URL, 30*time.Second)
+func requestPageContent(url string) (*draft.Post, error) {
+	article, err := readability.FromURL(url, 30*time.Second)
 	if err != nil {
-		return d, fmt.Errorf("failed to get data content, url=%s, %w", d.Post.URL, err)
+		return nil, fmt.Errorf("requestPageContent: failed to get data content, url=%s, err=%w", url, err)
 	}
 
-	if article.Title != "" {
-		d.Post.Title = article.Title
-	} else {
-		d.Post.Title = uuid.New().String()
+	if article.Title == "" {
+		return nil, fmt.Errorf("requestPageContent: failed to get page title, url=%s, err=%w", url, err)
 	}
-	d.Post.Content = article.Content
-	return d, nil
+	p := new(draft.Post)
+	p.URL = url
+	p.Title = article.Title
+	p.Content = article.Content
+	return p, nil
 }

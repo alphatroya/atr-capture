@@ -9,24 +9,23 @@ import (
 )
 
 func containsHTTPLink(s string) bool {
-	re := regexp.MustCompile(`http[s]?://[^\s]+`)
+	re := regexp.MustCompile(`^http[s]?://[^\s]+`)
 	return re.MatchString(s)
 }
 
-func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
-	lines := strings.Split(d.Text, "\n")
+func RequestTitleIfNeeded(text string) (draft.Draft, error) {
+	lines := strings.Split(text, "\n")
 	linesResult := make([]string, 0, len(lines))
+	d := draft.Draft{}
 	for _, line := range lines {
 		fragments := strings.Split(line, " ")
 
 		fragmentsResult := make([]string, 0, len(fragments))
 		for _, fragment := range fragments {
 			if len(fragment) != 0 && containsHTTPLink(fragment) {
-				d.Post = &draft.Post{
-					URL: fragment,
-				}
-				d, err := requestPage(d)
+				p, err := requestPageContent(fragment)
 				if err == nil {
+					d.Post = p
 					fragment = fmt.Sprintf("[%s](%s)", d.Post.Title, d.Post.URL)
 				}
 			}
@@ -36,9 +35,6 @@ func RequestTitleIfNeeded(d draft.Draft) (draft.Draft, bool, error) {
 
 		linesResult = append(linesResult, strings.Join(fragmentsResult, " "))
 	}
-	return draft.Draft{
-		Text:   strings.Join(linesResult, "\n"),
-		Post:   d.Post,
-		IsTODO: d.IsTODO,
-	}, d.Post != nil, nil
+	d.Text = strings.Join(linesResult, "\n")
+	return d, nil
 }

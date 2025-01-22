@@ -7,46 +7,39 @@ import (
 
 	"git.sr.ht/~alphatroya/atr-capture/bookmarks"
 	"git.sr.ht/~alphatroya/atr-capture/draft"
-	"git.sr.ht/~alphatroya/atr-capture/env"
 	"git.sr.ht/~alphatroya/atr-capture/forms"
 	"git.sr.ht/~alphatroya/atr-capture/save"
 	"github.com/charmbracelet/huh"
 )
 
 func main() {
-	if _, err := env.CheckEnvs(); err != nil {
-		fmt.Printf("Error in configuration: %s\n", err)
-		os.Exit(1)
-	}
-
-	d := enterText()
-	d, containURL, err := bookmarks.RequestTitleIfNeeded(d)
-	checkErr("Form aborted: ", err, d)
+	note := requestNoteFromUser()
+	d, err := bookmarks.RequestTitleIfNeeded(note)
+	checkErr("page url title request failed: ", err, d)
 
 	err = huh.NewConfirm().
 		Title("Mark this note as TODO?").
 		Value(&d.IsTODO).
 		Run()
-	checkErr("Form aborted: ", err, d)
+	checkErr("form aborted: ", err, d)
 
 	saveContent := false
-	if containURL {
+	if d.ContainURL() {
 		saveContent = forms.RequestSavingContent()
-		checkErr("Error requesting page content: ", err, d)
+		checkErr("error requesting page content: ", err, d)
 	}
 
 	nt, err := save.SaveToPages(d, saveContent)
 	if err == nil {
 		err = save.SaveToJournal(nt)
 	}
-
-	checkErr("Error writing to the file: ", err, d)
+	checkErr("error writing to the file: ", err, d)
 
 	draft.DropDraft()
-	fmt.Printf("Quick capture saved, a new note created: %s.md\n", nt)
+	fmt.Printf("quick capture saved, a new note created: %s.md\n", nt)
 }
 
-func enterText() draft.Draft {
+func requestNoteFromUser() string {
 	d := draft.RestoreOrNewDraft(
 		func() bool {
 			confirm, err := forms.ConfirmRestoreDraftDialog()
@@ -83,13 +76,13 @@ func enterText() draft.Draft {
 		fmt.Fprintf(os.Stderr, "Error reading file, path=%s, err=%v\n", file.Name(), err)
 		os.Exit(1)
 	}
-	d.Text = string(r)
+	text := string(r)
 	defer os.Remove(file.Name())
-	if d.Text == "" {
+	if text == "" {
 		fmt.Fprintf(os.Stderr, "File is empty, aborted, path=%s \n", file.Name())
 		os.Exit(1)
 	}
-	return d
+	return text
 }
 
 func saveDraftIfNeeded(d draft.Draft) {

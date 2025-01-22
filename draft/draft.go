@@ -32,6 +32,10 @@ type Draft struct {
 	IsTODO bool   `json:"isTodo"`
 }
 
+func (d Draft) ContainURL() bool {
+	return d.Post != nil
+}
+
 type Post struct {
 	URL     string `json:"url"`
 	Title   string `json:"title"`
