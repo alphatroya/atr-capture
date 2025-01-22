@@ -36,12 +36,7 @@ func main() {
 	d.IsTODO, err = forms.RequestMarkAsTodo()
 	checkErr("form aborted: ", err)
 
-	saveContent := false
-	if d.ContainURL() {
-		saveContent = forms.RequestSavingContent()
-		checkErr("error requesting page content: ", err)
-	}
-
+	saveContent := d.ContainURL() && forms.RequestSavingContent()
 	err = save.SaveToPages(notePath, d, saveContent)
 	checkErr("error writing to the file: ", err)
 
@@ -81,7 +76,7 @@ func requestNoteFromUser(path string) string {
 
 func checkErr(message string, err error) {
 	if err != nil {
-		fmt.Println(message, err)
+		fmt.Fprintln(os.Stderr, message, err)
 		os.Exit(1)
 	}
 }
