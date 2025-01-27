@@ -25,12 +25,13 @@ func init() {
 
 func main() {
 	noteTitle := save.GenerateQuickNoteTitle(time.Now())
-	err := save.SaveToJournal(noteTitle, envs.TodayJournalPath())
-	checkErr("failed to add log to journal file: ", err)
 
 	notePath := envs.PagePath(noteTitle)
 	note, err := requestNoteFromUser(notePath)
 	checkErr("failed to request note content from user: ", err)
+
+	err = save.SaveToJournal(noteTitle, envs.TodayJournalPath())
+	checkErr("failed to add log to journal file: ", err)
 
 	d, err := bookmarks.ExtractAndFormatLinkTitles(note)
 	checkErr("failed to extract and format link titles from the note content: ", err)
