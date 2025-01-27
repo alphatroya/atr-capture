@@ -33,7 +33,7 @@ func CheckEnvs() (Envs, error) {
 	const knowledgeBaseEnv = "KNOWLEDGE_BASE"
 	e.path, ok = os.LookupEnv(knowledgeBaseEnv)
 	if !ok {
-		return e, fmt.Errorf("Failed to find \"%s\" env variable. It is REQUIRED for app", knowledgeBaseEnv)
+		return e, fmt.Errorf("failed to find \"%s\" env variable. It is REQUIRED for app", knowledgeBaseEnv)
 	}
 	return e, nil
 }

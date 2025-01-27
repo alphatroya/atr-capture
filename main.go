@@ -59,18 +59,18 @@ func requestNoteFromUser(path string) (string, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		return "", fmt.Errorf("requestNoteFromUser: error opening editor, editor=%s, path=%s, err=%w\n", editor, path, err)
+		return "", fmt.Errorf("requestNoteFromUser: error opening editor, editor=%s, path=%s, err=%w", editor, path, err)
 	}
 
 	r, err := os.ReadFile(path)
 	if err != nil {
-		return "", fmt.Errorf("requestNoteFromUser: error reading file after saving, path=%s, err=%w\n", path, err)
+		return "", fmt.Errorf("requestNoteFromUser: error reading file after saving, path=%s, err=%w", path, err)
 	}
 
 	text := string(r)
 	if text == "" {
 		os.Remove(path)
-		return "", fmt.Errorf("requestNoteFromUser: note file is empty, aborted, file=%s \n", path)
+		return "", fmt.Errorf("requestNoteFromUser: note file is empty, aborted, file=%s", path)
 	}
 	return text, nil
 }

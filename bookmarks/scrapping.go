@@ -31,7 +31,6 @@ func requestPageContent(url string) (*draft.Post, error) {
 		p.Title = article.Title
 		p.Content = article.Content
 		pch <- p
-		return
 	}()
 
 	go func() {
