@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -10,6 +11,7 @@ import (
 	"github.com/alphatroya/atr-capture/env"
 	"github.com/alphatroya/atr-capture/forms"
 	"github.com/alphatroya/atr-capture/save"
+	"github.com/earthboundkid/versioninfo/v2"
 )
 
 var envs env.Envs
@@ -24,6 +26,9 @@ func init() {
 }
 
 func main() {
+	versioninfo.AddFlag(nil)
+	flag.Parse()
+
 	noteTitle := save.GenerateQuickNoteTitle(time.Now())
 
 	notePath := envs.PagePath(noteTitle)

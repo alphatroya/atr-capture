@@ -5,6 +5,7 @@ go 1.23
 require (
 	github.com/charmbracelet/huh v0.6.0
 	github.com/charmbracelet/huh/spinner v0.0.0-20250109160224-6c6b31916f8e
+	github.com/earthboundkid/versioninfo/v2 v2.24.1
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 )
 
