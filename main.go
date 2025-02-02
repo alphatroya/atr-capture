@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"time"
@@ -30,12 +31,23 @@ func main() {
 	flag.Parse()
 
 	noteTitle := save.GenerateQuickNoteTitle(time.Now())
-
 	notePath := envs.PagePath(noteTitle)
-	note, err := requestNoteFromUser(notePath)
-	checkErr("failed to request note content from user: ", err)
 
-	err = save.SaveToJournal(noteTitle, envs.TodayJournalPath())
+	var note string
+	stat, _ := os.Stdin.Stat()
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		input, err := io.ReadAll(os.Stdin)
+		checkErr("failed to read note content from stdin: ", err)
+		err = os.WriteFile(notePath, input, 0644)
+		checkErr("failed to write note content from stdin to given path: ", err)
+		note = string(input)
+	} else {
+		var err error
+		note, err = requestNoteFromUser(notePath)
+		checkErr("failed to request note content from user: ", err)
+	}
+
+	err := save.SaveToJournal(noteTitle, envs.TodayJournalPath())
 	checkErr("failed to add log to journal file: ", err)
 
 	d, err := bookmarks.ExtractAndFormatLinkTitles(note)
