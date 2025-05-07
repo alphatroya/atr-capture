@@ -15,13 +15,20 @@ import (
 	"github.com/earthboundkid/versioninfo/v2"
 )
 
-var envs env.Envs
+var config env.Config
 
 func init() {
 	var err error
-	envs, err = env.CheckEnvs()
+	var configDir string
+	config, configDir, err = env.LoadConfig()
 	if err != nil {
-		fmt.Printf("error in configuration: unable to check environment variables: %s\n", err)
+		fmt.Printf("error in configuration: can't load config file: %s\n", err)
+		fmt.Printf(`
+Create a similar config.json file at %s: 
+{
+	"path": ""
+}`, configDir)
+		fmt.Println("")
 		os.Exit(1)
 	}
 }
@@ -31,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	noteTitle := save.GenerateQuickNoteTitle(time.Now())
-	notePath := envs.PagePath(noteTitle)
+	notePath := config.PagePath(noteTitle)
 
 	var note string
 	stat, _ := os.Stdin.Stat()
@@ -47,7 +54,7 @@ func main() {
 		checkErr("failed to request note content from user: ", err)
 	}
 
-	err := save.SaveToJournal(noteTitle, envs.TodayJournalPath())
+	err := save.SaveToJournal(noteTitle, config.TodayJournalPath())
 	checkErr("failed to add log to journal file: ", err)
 
 	d, err := bookmarks.ExtractAndFormatLinkTitles(note)

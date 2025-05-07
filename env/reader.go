@@ -1,40 +1,48 @@
 package env
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
 	"time"
 )
 
-type Envs struct {
-	path string
+type Config struct {
+	Path string `json:"path"`
 }
 
-func (e Envs) journalsFolder() string {
-	return path.Join(e.path, "journals")
+func (e Config) journalsFolder() string {
+	return path.Join(e.Path, "journals")
 }
 
-func (e Envs) pagesFolder() string {
-	return path.Join(e.path, "pages")
+func (e Config) pagesFolder() string {
+	return path.Join(e.Path, "pages")
 }
 
-func (e Envs) TodayJournalPath() string {
+func (e Config) TodayJournalPath() string {
 	currentDate := time.Now()
 	return path.Join(e.journalsFolder(), currentDate.Format("2006_01_02")+".md")
 }
 
-func (e Envs) PagePath(noteTitle string) string {
+func (e Config) PagePath(noteTitle string) string {
 	return path.Join(e.pagesFolder(), noteTitle+".md")
 }
 
-func CheckEnvs() (Envs, error) {
-	var e Envs
-	var ok bool
-	const knowledgeBaseEnv = "KNOWLEDGE_BASE"
-	e.path, ok = os.LookupEnv(knowledgeBaseEnv)
-	if !ok {
-		return e, fmt.Errorf("failed to find \"%s\" env variable. It is REQUIRED for app", knowledgeBaseEnv)
+func LoadConfig() (Config, string, error) {
+	var e Config
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return e, "", fmt.Errorf("CheckEnvs: failed to find user config dir location, err=%w", err)
 	}
-	return e, nil
+	configPath := path.Join(configDir, "atr-capture", "config.json")
+	jsonData, err := os.ReadFile(configPath)
+	if err != nil {
+		return e, configPath, fmt.Errorf("CheckEnvs: failed to find config json file, err=%w", err)
+	}
+
+	if err := json.Unmarshal(jsonData, &e); err != nil {
+		return e, configPath, fmt.Errorf("CheckEnvs: failed to unmarshal config file, err=%w", err)
+	}
+	return e, configPath, nil
 }
